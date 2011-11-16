@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
-project( AsWind )
+project( FACT-GAME )
 
+# 預設 SDL 及 Boost 相關的 headers, libs 都放在 d:/contrib 下
+# 請自行修改至正確目錄
 include_directories( d:/contrib/include )
 link_directories ( d:/contrib/lib )
 
