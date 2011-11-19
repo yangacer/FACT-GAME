@@ -6,5 +6,13 @@ project( FACT-GAME )
 include_directories( d:/contrib/include )
 link_directories ( d:/contrib/lib )
 
-add_executable ( main main.cpp core.cpp surface.cpp event.cpp animate.cpp)
-target_link_libraries ( main SDL SDLmain)
+add_executable ( 
+  main main.cpp 
+  core.cpp 
+  surface.cpp 
+  event.cpp 
+  animate.cpp
+  entity.cpp
+  )
+
+target_link_libraries ( main SDL SDLmain SDL_image)

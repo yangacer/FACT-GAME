@@ -22,7 +22,14 @@ public:
    */
   static SDL_Surface* 
   OnLoad(char* File); 
+ 
+  static bool
+  Transparent(SDL_Surface* Dest, Uint32 Color);
   
+  static Uint32 
+  map_rgb(SDL_Surface* Surf,
+    Uint8 Red, Uint8 Green, Uint8 Blue);
+
   /** @brief Wrapper of SDL's drawing method
    *  @param Surf_Dest Destination.
    *  @param Surf_Src Source.

@@ -1,4 +1,5 @@
 #include "surface.hpp"
+#include "SDL/SDL_image.h"
 
 namespace AsWind { 
 
@@ -7,19 +8,34 @@ SDL_Surface* CSurface::OnLoad(char* File)
     SDL_Surface* Surf_Temp(NULL); 
     SDL_Surface* Surf_Return(NULL); 
   
-    if((Surf_Temp = SDL_LoadBMP(File)) == NULL) { 
+    if(NULL == (Surf_Temp = IMG_Load(File))){//SDL_LoadBMP(File))) { 
         return NULL; 
     } 
     
     // transform display formation of the loaded
     // surface into current format
-    Surf_Return = SDL_DisplayFormat(Surf_Temp); 
+    Surf_Return = SDL_DisplayFormatAlpha(Surf_Temp); 
 
     SDL_FreeSurface(Surf_Temp); 
   
     return Surf_Return; 
 } 
-  
+
+Uint32
+CSurface::map_rgb(SDL_Surface* Surf,
+    Uint8 Red, Uint8 Green, Uint8 Blue)
+{
+  return SDL_MapRGB(Surf->format, Red, Green, Blue);
+}
+
+bool
+CSurface::Transparent(SDL_Surface* Dest, Uint32 Color)
+{
+  return  0 == SDL_SetColorKey(Dest, 1, Color);
+}
+
+
+
 bool CSurface::OnDraw(
   SDL_Surface* Surf_Dest, SDL_Surface* Surf_Src, 
   int X, int Y) 

@@ -55,7 +55,7 @@ CApp::OnInit()
       return false; 
     } 
     
-    if( NULL == ( Surf_Test = CSurface::OnLoad("yoshi.bmp"))) {
+    if( NULL == ( Surf_Test = CSurface::OnLoad("yoshi.png"))) {
       return false;
     }
 
