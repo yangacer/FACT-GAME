@@ -49,7 +49,7 @@ CApp::OnInit()
     }
     if(NULL ==( Surf_Display = 
           SDL_SetVideoMode(
-            640, 480, 32, 
+            800, 600, 32, 
             SDL_HWSURFACE | SDL_DOUBLEBUF)) ) 
     { 
       return false; 

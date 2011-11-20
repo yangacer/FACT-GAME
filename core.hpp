@@ -1,14 +1,14 @@
 #ifndef _CORE_HPP
 #define _CORE_HPP
 
-#include "boost/noncopyable.hpp"
+//#include "boost/noncopyable.hpp"
 #include "SDL/SDL.h"
 #include "event.hpp"
 
 namespace AsWind {
 
 class CApp 
-: boost::noncopyable , CEvent
+: CEvent //, boost::noncopyable
 { 
 public: 
   CApp(); 
