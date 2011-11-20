@@ -2,13 +2,12 @@
 
 1. SDL
 
-2. Boost
-
-3. CMake
+2. CMake
 
 #windows
 
-Please edit CMakeLists.txt for fitting your environment.
+You need to setup your enviornment that involves nmake command
+in your %PATH%.
 
 >cd FACT-GAME
 >
