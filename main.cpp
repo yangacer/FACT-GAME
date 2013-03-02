@@ -4,12 +4,12 @@
 #include <vector>
 #include <list>
 #include <boost/cstdint.hpp>
-#include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/ref.hpp>
+#include <boost/lockfree/queue.hpp>
 #include "SDL/SDL.h"
 
 namespace asdl {
@@ -26,42 +26,58 @@ public:
     int flag = SDL_SWSURFACE | SDL_DOUBLEBUF;
     if(0 == (surface_ = SDL_SetVideoMode(1024,768, 32, flag)))
       throw std::runtime_error("Init SDL surface failed");
+
+    for(auto &i : queue_) 
+      i.reset(new boost::lockfree::queue<handler_type*>(10));
+    
   }
 
   ~sdl()
   { 
-    SDL_Quit();  
-    std::cerr << "Quit SDL\n";
+    SDL_Quit();
+    handler_type *hptr;
+    for(auto &i : queue_)
+      while(i->pop(hptr))
+        delete hptr;
   }
 
   void run()
   {
     SDL_Event event;
+    handler_type *hptr = 0;
     while(SDL_WaitEvent(&event) >=0) {
       if(event.type == SDL_QUIT) {
         boost::system::error_code ec(
           boost::system::errc::operation_canceled,
           boost::system::system_category());
 
-        for(auto i = queue_.begin(); i != queue_.end(); ++i)
-          for(auto j = i->begin(); j != i->end(); ++j)
-            (*j)(ec, boost::ref(*this), SDL_Event()); 
+        for(auto i = queue_.begin(); i != queue_.end(); ++i) {
+          while( (*i)->pop(hptr) ) {
+            (*hptr)(ec, boost::ref(*this), SDL_Event());
+            delete hptr;
+          }
+        }
         break;
-      } else if(queue_[event.type].size()) {
-        handler_type h = queue_[event.type].front();
-        queue_[event.type].pop_front();
-        h(boost::system::error_code(), boost::ref(*this), event);
+      } else {
+        if (queue_[event.type]->pop(hptr)) {
+          (*hptr)(boost::system::error_code(), boost::ref(*this), event);
+          delete hptr;
+        }
       }
     }
   }
 
   void async_wait_event(boost::uint8_t type, handler_type handler)
   {
-    queue_[type].push_back(handler);
+    handler_type *hptr = new handler_type(handler);
+    if(!queue_[type]->push(hptr)) {
+      std::cerr << "push node failed\n";
+      delete hptr;
+    }
   }
 private:
   SDL_Surface *surface_;
-  std::vector<std::list<handler_type> > queue_;
+  std::vector<boost::shared_ptr<boost::lockfree::queue<handler_type*> > > queue_;
 };
 
 } // namespace asdl
