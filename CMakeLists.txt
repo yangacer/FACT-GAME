@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 2.8)
 project( FACT-GAME )
 
-# 預設 SDL 及 Boost 相關的 headers, libs 都放在 d:/contrib 下
-# 請自行修改至正確目錄
-include_directories( ${PROJECT_SOURCE_DIR}/contrib/include )
-link_directories ( ${PROJECT_SOURCE_DIR}/contrib/lib )
+list (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_mod)
+include (GetGitRevisionDescription)
+include (use_c++11)
+include (disable_useless_vc_warning)
 
-add_executable ( 
-  main main.cpp 
-  core.cpp 
-  surface.cpp 
-  event.cpp 
-  animate.cpp
-  entity.cpp
-  )
+find_package( SDL REQUIRED )
+find_package( SDL_image REQUIRED )
+find_package( Boost REQUIRED COMPONENTS system )
 
-target_link_libraries ( main SDL SDLmain SDL_image)
+include_directories(${Boost_INCLUDE_DIRS})
+
+include_directories ( ${SDL_INCLUDE_DIR} ${SDLIMAGE_ICLUDE_DIR} )
+set( LIBS ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY} ${Boost_LIBRARIES} )
+
+add_executable ( main main.cpp )
+target_link_libraries ( main ${LIBS} )
